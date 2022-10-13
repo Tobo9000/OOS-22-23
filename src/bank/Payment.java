@@ -44,8 +44,8 @@ public class Payment {
      */
     public Payment(String date, double amount, String description, double incomingInterest, double outgoingInterest) {
         this(date, amount, description);
-        this.incomingInterest = incomingInterest;
-        this.outgoingInterest = outgoingInterest;
+        setIncomingInterest(incomingInterest);
+        setOutgoingInterest(outgoingInterest);
     }
 
     /**

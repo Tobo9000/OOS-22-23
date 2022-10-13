@@ -28,8 +28,8 @@ public class Transfer {
      */
     public Transfer(String date, double amount, String description) {
         this.date = date;
-        this.amount = amount;
         this.description = description;
+        setAmount(amount);
     }
 
     /**
