@@ -4,9 +4,9 @@ package bank;
  * Repraesentiert Ueberweisungen im Banksystem.
  * Der Betrag kann nur positiv sein.
  * @author Tobias Schnuerpel
- * @version 1.0
+ * @version 2.0
  */
-public class Transfer {
+public class Transfer extends Transaction {
 
     private String date;                // Datum der Ueberweisung, Format: "DD.MM.YYYY"
     private double amount;              // Betrag der Ueberweisung, positiv
@@ -27,6 +27,7 @@ public class Transfer {
      * @param description Beschreibung der Ueberweisung
      */
     public Transfer(String date, double amount, String description) {
+        super(date, amount, description);
         this.date = date;
         this.description = description;
         setAmount(amount);

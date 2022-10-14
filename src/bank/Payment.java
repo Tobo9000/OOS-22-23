@@ -4,9 +4,9 @@ package bank;
  * Repraesentiert Ein- und Auszahlungen im Banksystem.
  * Der Betrag kann entsprechend positiv (Einzahlung) oder negativ (Auszahlung) sein.
  * @author Tobias Schnuerpel
- * @version 1.0
+ * @version 2.0
  */
-public class Payment {
+public class Payment extends Transaction {
 
     private String date;                // Datum der Transaktion, Format: "DD.MM.YYYY"
     private double amount;              // Betrag der Transaktion, positiv oder negativ
@@ -28,9 +28,7 @@ public class Payment {
      * @param description Beschreibung der Transaktion
      */
     public Payment(String date, double amount, String description) {
-        this.date = date;
-        this.amount = amount;
-        this.description = description;
+        super(date, amount, description);
     }
 
     /**
@@ -97,9 +95,6 @@ public class Payment {
      * Gibt das Datum der Transaktion zurueck.
      * @return Datum der Transaktion, Format: "DD.MM.YYYY"
      */
-    public String getDate() {
-        return date;
-    }
 
     /**
      * Setzt das Datum der Transaktion.
