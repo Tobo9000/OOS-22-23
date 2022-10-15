@@ -3,17 +3,14 @@ package bank;
 /**
  * Repraesentiert Ein- und Auszahlungen im Banksystem.
  * Der Betrag kann entsprechend positiv (Einzahlung) oder negativ (Auszahlung) sein.
+ * Erbt von der Klasse {@link Transaction}.
  * @author Tobias Schnuerpel
  * @version 2.0
  */
 public class Payment extends Transaction {
 
-    private String date;                // Datum der Transaktion, Format: "DD.MM.YYYY"
-    private double amount;              // Betrag der Transaktion, positiv oder negativ
-    private String description;         // Beschreibung der Transaktion
-
-    private double incomingInterest;    // Zinsen, die bei einer Einzahlung (Deposit) anfallen, in Prozent (0.0 - 1.0)
-    private double outgoingInterest;    // Zinsen, die bei einer Auszahlung (Withdrawal) anfallen, in Prozent (0.0 - 1.0)
+    private double incomingInterest = 0;    // Zinsen, die bei einer Einzahlung (Deposit) anfallen, in Prozent (0.0 - 1.0)
+    private double outgoingInterest = 0;    // Zinsen, die bei einer Auszahlung (Withdrawal) anfallen, in Prozent (0.0 - 1.0)
 
     //------------------------------------------------------------------------------------------------------------------
     // Konstruktoren
@@ -41,7 +38,7 @@ public class Payment extends Transaction {
      * @param outgoingInterest Zinsen, die bei einer Auszahlung (Withdrawal) anfallen, in Prozent (0.0 - 1.0)
      */
     public Payment(String date, double amount, String description, double incomingInterest, double outgoingInterest) {
-        this(date, amount, description);
+        super(date, amount, description);
         setIncomingInterest(incomingInterest);
         setOutgoingInterest(outgoingInterest);
     }
@@ -65,11 +62,19 @@ public class Payment extends Transaction {
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Gibt alle Attribute des Objekts auf der Konsole aus.
-     * Nutzt die Methode {@link #toString()}.
+     * Gibt den Wert der Ein- oder Auszahlung nach
+     * Abzug (Einzahlung) oder Addition (Auszahlung) der Zinsen zurueck.
+     * @return Betrag der Transaktion nach Abzug der Zinsen
      */
-    public void printObject() {
-        System.out.println(this);
+    @Override
+    public double calculate() {
+        if (amount >= 0) {
+            // Einzahlung
+            return amount * (1 - incomingInterest);
+        } else {
+            // Auszahlung
+            return amount * (1 + outgoingInterest);
+        }
     }
 
     /**
@@ -79,63 +84,32 @@ public class Payment extends Transaction {
     @Override
     public String toString() {
         return "Payment{" +
-                "date='" + date + '\'' +
-                ", amount=" + amount +
-                ", description='" + description + '\'' +
-                ", incomingInterest=" + incomingInterest +
-                ", outgoingInterest=" + outgoingInterest +
+                super.toString() +
+                ", incomingInterest=" + incomingInterest + '\'' +
+                ", outgoingInterest=" + outgoingInterest + '\'' +
                 '}';
+    }
+
+    /**
+     * Vergleicht zwei Objekte der Klasse Payment.
+     * Gibt true zurueck, wenn alle Attribute gleich sind, sonst false.
+     * @param o Objekt, mit dem die Transaktion verglichen werden soll
+     * @return true, wenn alle Attribute gleich sind, sonst false
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Payment payment = (Payment) o;
+
+        if (payment.incomingInterest != this.incomingInterest) return false;
+        return payment.outgoingInterest == this.outgoingInterest;
     }
 
     //------------------------------------------------------------------------------------------------------------------
     // Getter und Setter
     //------------------------------------------------------------------------------------------------------------------
-
-    /**
-     * Gibt das Datum der Transaktion zurueck.
-     * @return Datum der Transaktion, Format: "DD.MM.YYYY"
-     */
-
-    /**
-     * Setzt das Datum der Transaktion.
-     * @param date Datum der Transaktion, Format: "DD.MM.YYYY"
-     */
-    public void setDate(String date) {
-        // TODO: Pruefen, ob das Datum gueltig ist
-        this.date = date;
-    }
-
-    /**
-     * Gibt den Betrag der Transaktion zurueck.
-     * @return Betrag der Transaktion, positiv oder negativ
-     */
-    public double getAmount() {
-        return amount;
-    }
-
-    /**
-     * Setzt den Betrag der Transaktion.
-     * @param amount Betrag der Transaktion, positiv oder negativ
-     */
-    public void setAmount(double amount) {
-        this.amount = amount;
-    }
-
-    /**
-     * Gibt die Beschreibung der Transaktion zurueck.
-     * @return Beschreibung der Transaktion
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * Setzt die Beschreibung der Transaktion.
-     * @param description Beschreibung der Transaktion
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     /**
      * Gibt die Zinsen zurueck, die bei einer Einzahlung (Deposit) anfallen.
@@ -148,6 +122,7 @@ public class Payment extends Transaction {
     /**
      * Setzt die Zinsen, die bei einer Einzahlung (Deposit) anfallen.
      * @param incomingInterest Zinsen bei einer Einzahlung, in Prozent (0.0 - 1.0)
+     * @throws IllegalArgumentException wenn {@param incomingInterest} nicht zwischen 0 und 1 liegt
      */
     public void setIncomingInterest(double incomingInterest) {
         if (incomingInterest < 0.0 || incomingInterest > 1.0) {
@@ -168,6 +143,7 @@ public class Payment extends Transaction {
     /**
      * Setzt die Zinsen, die bei einer Auszahlung (Withdrawal) anfallen.
      * @param outgoingInterest Zinsen bei einer Auszahlung, in Prozent (0.0 - 1.0)
+     * @throws IllegalArgumentException wenn {@param outgoingInterest} nicht zwischen 0 und 1 liegt
      */
     public void setOutgoingInterest(double outgoingInterest) {
         if (outgoingInterest < 0.0 || outgoingInterest > 1.0) {
@@ -176,4 +152,5 @@ public class Payment extends Transaction {
         }
         this.outgoingInterest = outgoingInterest;
     }
+
 }
