@@ -39,7 +39,7 @@ public class Main {
         System.out.println("erwartet = false / Gleichheit payment1 und payment2: " + payment1.equals(payment2));
         System.out.println("erwartet = true / Gleichheit payment2 und payment3: " + payment2.equals(payment3));
 
-        System.out.println("\nTeste Klasse Payment:");
+        System.out.println("\nTeste Klasse Transfer:");
 
         // Teste Klasse Transfer
         Transfer transfer1 = new Transfer("01.01.2042", 100.0, "Ueberweisung1");
