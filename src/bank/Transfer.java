@@ -1,7 +1,5 @@
 package bank;
 
-import java.util.Objects;
-
 /**
  * Repraesentiert Ueberweisungen im Banksystem.
  * Der Betrag kann nur positiv sein.

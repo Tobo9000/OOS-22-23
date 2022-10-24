@@ -1,7 +1,5 @@
 package bank;
 
-import java.util.Objects;
-
 /**
  * Repraesentiert eine abstrakte Transaktion im Banksystem und definiert
  * grundlegene Eigenschaften und Methoden.
