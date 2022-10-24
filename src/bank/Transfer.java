@@ -27,8 +27,8 @@ public class Transfer {
      * @param description Beschreibung der Ueberweisung
      */
     public Transfer(String date, double amount, String description) {
-        this.date = date;
-        this.description = description;
+        setDate(date);
+        setDescription(description);
         setAmount(amount);
     }
 
@@ -42,8 +42,8 @@ public class Transfer {
      */
     public Transfer(String date, double amount, String description, String sender, String recipient) {
         this(date, amount, description);
-        this.sender = sender;
-        this.recipient = recipient;
+        setSender(sender);
+        setRecipient(recipient);
     }
 
     /**

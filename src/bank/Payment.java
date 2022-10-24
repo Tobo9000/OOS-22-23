@@ -28,9 +28,9 @@ public class Payment {
      * @param description Beschreibung der Transaktion
      */
     public Payment(String date, double amount, String description) {
-        this.date = date;
-        this.amount = amount;
-        this.description = description;
+        setDate(date);
+        setAmount(amount);
+        setDescription(description);
     }
 
     /**
