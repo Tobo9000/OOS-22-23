@@ -111,7 +111,7 @@ public class Transfer extends Transaction {
      * @throws IllegalArgumentException wenn der Betrag negativ ist
      */
     @Override
-    public void setAmount(double amount) {
+    public void setAmount(double amount) throws IllegalArgumentException {
         if (amount <= 0) {
             System.out.println("Der Betrag einer Ueberweisung muss positiv sein, war aber " + amount + "!");
             throw new IllegalArgumentException("Der Betrag einer Ueberweisung muss positiv sein.");

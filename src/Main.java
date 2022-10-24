@@ -60,6 +60,7 @@ public class Main {
             System.out.println("erwartet = IllegalArgumentException / tatsächlich = " + e);
         }
 
+
         System.out.println("erwartet = false / Gleichheit transfer1 und transfer2: " + transfer1.equals(transfer2));
         System.out.println("erwartet = true / Gleichheit transfer2 und transfer3: " + transfer2.equals(transfer3));
     }
