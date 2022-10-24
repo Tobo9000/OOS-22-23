@@ -118,8 +118,9 @@ public class Transfer {
     /**
      * Setzt den Betrag der Ueberweisung.
      * @param amount Betrag der Ueberweisung, positiv
+     * @throws IllegalArgumentException wenn amount negativ ist
      */
-    public void setAmount(double amount) {
+    public void setAmount(double amount) throws IllegalArgumentException {
         if (amount <= 0) {
             System.out.println("Der Betrag einer Ueberweisung muss positiv sein, war aber " + amount + "!");
             throw new IllegalArgumentException("Der Betrag einer Ueberweisung muss positiv sein.");
