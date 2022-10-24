@@ -1,16 +1,15 @@
 package bank;
 
+import java.util.Objects;
+
 /**
  * Repraesentiert Ueberweisungen im Banksystem.
  * Der Betrag kann nur positiv sein.
+ * Erbt von der Klasse {@link Transaction}.
  * @author Tobias Schnuerpel
- * @version 1.0
+ * @version 2.0
  */
-public class Transfer {
-
-    private String date;                // Datum der Ueberweisung, Format: "DD.MM.YYYY"
-    private double amount;              // Betrag der Ueberweisung, positiv
-    private String description;         // Beschreibung der Ueberweisung
+public class Transfer extends Transaction {
 
     private String sender;              // Akteur, der die Ueberweisung initiiert hat
     private String recipient;           // Akteur, der die Ueberweisung empfaengt
@@ -27,9 +26,7 @@ public class Transfer {
      * @param description Beschreibung der Ueberweisung
      */
     public Transfer(String date, double amount, String description) {
-        setDate(date);
-        setDescription(description);
-        setAmount(amount);
+        super(date, amount, description);
     }
 
     /**
@@ -41,7 +38,7 @@ public class Transfer {
      * @param recipient Akteur, der die Ueberweisung empfaengt
      */
     public Transfer(String date, double amount, String description, String sender, String recipient) {
-        this(date, amount, description);
+        super(date, amount, description);
         setSender(sender);
         setRecipient(recipient);
     }
@@ -65,26 +62,43 @@ public class Transfer {
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Gibt alle Attribute der Ueberweisung auf der Konsole aus.
-     * Nutzt die Methode {@link #toString()}.
+     * Da bei Ueberweisungen keine Zinsen anfallen,
+     * wird der Betrag unveraendert zurueckgegeben.
+     * @return Betrag der Ueberweisung
      */
-    public void printObject() {
-        System.out.println(this);
+    @Override
+    public double calculate() {
+        return amount;
     }
 
     /**
-     * Gibt alle Attribute der Ueberweisung als String zurueck.
-     * @return String mit allen Attributen der Ueberweisung
+     * Da bei Ueberweisungen (in diesem Szenario) keine
+     * Zinsen anfallen, wird der Betrag unveraendert zurueckgegeben.
      */
     @Override
     public String toString() {
         return "Transfer{" +
-                "date='" + date + '\'' +
-                ", amount=" + amount +
-                ", description='" + description + '\'' +
+                super.toString() +
                 ", sender='" + sender + '\'' +
                 ", recipient='" + recipient + '\'' +
                 '}';
+    }
+
+    /**
+     * Ueberprueft, ob zwei Ueberweisungen gleich sind.
+     * Gibt true zurueck, wenn alle Werte gleich sind, sonst false.
+     * @param o Objekt, mit dem die Transaktion verglichen werden soll
+     * @return true, wenn alle Werte gleich sind, sonst false
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Transfer transfer = (Transfer) o;
+
+        if (!transfer.sender.equals(this.sender)) return false;
+        return transfer.recipient.equals(this.recipient);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -92,58 +106,18 @@ public class Transfer {
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Gibt das Datum der Ueberweisung zurueck.
-     * @return Datum der Ueberweisung, Format: "DD.MM.YYYY"
-     */
-    public String getDate() {
-        return date;
-    }
-
-    /**
-     * Setzt das Datum der Ueberweisung.
-     * @param date Datum der Ueberweisung, Format: "DD.MM.YYYY"
-     */
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    /**
-     * Gibt den Betrag der Ueberweisung zurueck.
-     * @return Betrag der Ueberweisung, positiv
-     */
-    public double getAmount() {
-        return amount;
-    }
-
-    /**
-     * Setzt den Betrag der Ueberweisung.
+     * Setzt den Betrag der Ueberweisung und ueberprueft, ob er positiv ist.
      * @param amount Betrag der Ueberweisung, positiv
-     * @throws IllegalArgumentException wenn amount negativ ist
+     * @throws IllegalArgumentException wenn der Betrag negativ ist
      */
+    @Override
     public void setAmount(double amount) throws IllegalArgumentException {
         if (amount <= 0) {
             System.out.println("Der Betrag einer Ueberweisung muss positiv sein, war aber " + amount + "!");
             throw new IllegalArgumentException("Der Betrag einer Ueberweisung muss positiv sein.");
         }
-        this.amount = amount;
+        super.setAmount(amount);
     }
-
-    /**
-     * Gibt die Beschreibung der Ueberweisung zurueck.
-     * @return Beschreibung der Ueberweisung
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * Setzt die Beschreibung der Ueberweisung.
-     * @param description Beschreibung der Ueberweisung
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     /**
      * Gibt den Akteur zurueck, der die Ueberweisung initiiert hat.
      * @return Akteur, der die Ueberweisung initiiert hat
@@ -175,4 +149,5 @@ public class Transfer {
     public void setRecipient(String recipient) {
         this.recipient = recipient;
     }
+
 }
