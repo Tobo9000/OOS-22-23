@@ -26,9 +26,12 @@ public class Main {
         // Teste Klasse Transfer
         Transfer transfer1 = new Transfer("01.01.2042", 100.0, "Ueberweisung1");
         transfer1.printObject();
-        Transfer transfer2 = new Transfer("12.12.2012", -42.0, "Ueberweisung2", "DE1234567890", "DE0987654321");
+        Transfer transfer2 = new Transfer("12.12.2012", 42.0, "Ueberweisung2", "DE1234567890", "DE0987654321");
         transfer2.printObject();
+
         Transfer transfer3 = new Transfer(transfer2);
+        transfer3.setAmount(55);
+        transfer2.printObject();
         transfer3.printObject();
 
     }
