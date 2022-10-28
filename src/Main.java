@@ -79,5 +79,8 @@ public class Main {
         transfer3.setAmount(42.0);
         System.out.println("erwartet = false / Gleichheit transfer1 und transfer2: " + transfer1.equals(transfer2));
         System.out.println("erwartet = true / Gleichheit transfer2 und transfer3: " + transfer2.equals(transfer3));
+
+        // Teste equals für beide Klassen
+        System.out.println("erwartet = false / Gleichheit payment1 und transfer1: " + payment1.equals(transfer1));
     }
 }
