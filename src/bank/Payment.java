@@ -9,8 +9,10 @@ package bank;
  */
 public class Payment extends Transaction {
 
-    private double incomingInterest = 0;    // Zinsen, die bei einer Einzahlung (Deposit) anfallen, in Prozent (0.0 - 1.0)
-    private double outgoingInterest = 0;    // Zinsen, die bei einer Auszahlung (Withdrawal) anfallen, in Prozent (0.0 - 1.0)
+    /** Zinsen, die bei einer Einzahlung (Deposit) anfallen, in Prozent (0.0 - 1.0) */
+    private double incomingInterest = 0;
+    /** Zinsen, die bei einer Auszahlung (Withdrawal) anfallen, in Prozent (0.0 - 1.0) */
+    private double outgoingInterest = 0;
 
     //------------------------------------------------------------------------------------------------------------------
     // Konstruktoren

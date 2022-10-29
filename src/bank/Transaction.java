@@ -9,9 +9,12 @@ package bank;
  */
 public abstract class Transaction implements CalculateBill {
 
-    protected String date;              // Datum der Transaktion, Format: "DD.MM.YYYY"
-    protected double amount;            // Betrag der Transaktion
-    protected String description;       // Beschreibung der Transaktion
+    /** Datum der Transaktion, Format: "DD.MM.YYYY" */
+    protected String date;
+    /** Betrag der Transaktion */
+    protected double amount;
+    /** Beschreibung der Transaktion */
+    protected String description;
 
     //------------------------------------------------------------------------------------------------------------------
     // Konstruktoren

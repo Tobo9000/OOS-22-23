@@ -9,8 +9,10 @@ package bank;
  */
 public class Transfer extends Transaction {
 
-    private String sender;              // Akteur, der die Ueberweisung initiiert hat
-    private String recipient;           // Akteur, der die Ueberweisung empfaengt
+    /** Akteur, der die Ueberweisung initiiert hat. */
+    private String sender;
+    /** Akteur, der die Ueberweisung empfaengt. */
+    private String recipient;
 
     //------------------------------------------------------------------------------------------------------------------
     // Konstruktoren
