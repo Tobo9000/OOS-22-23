@@ -1,5 +1,7 @@
 package bank;
 
+import bank.exceptions.TransactionAttributeException;
+
 /**
  * Repraesentiert Ein- und Auszahlungen im Banksystem.
  * Der Betrag kann entsprechend positiv (Einzahlung) oder negativ (Auszahlung) sein.
@@ -124,12 +126,12 @@ public class Payment extends Transaction {
     /**
      * Setzt die Zinsen, die bei einer Einzahlung (Deposit) anfallen.
      * @param incomingInterest Zinsen bei einer Einzahlung, in Prozent (0.0 - 1.0)
-     * @throws IllegalArgumentException wenn {@param incomingInterest} nicht zwischen 0 und 1 liegt
+     * @throws TransactionAttributeException wenn {@param incomingInterest} nicht zwischen 0 und 1 liegt
      */
-    public void setIncomingInterest(double incomingInterest) throws IllegalArgumentException {
+    public void setIncomingInterest(double incomingInterest) throws TransactionAttributeException {
         if (incomingInterest < 0.0 || incomingInterest > 1.0) {
             System.out.println("Fehlerhafte Eingabe: " + incomingInterest + " ist keine gueltige (0.0 - 1.0) Zinssatzangabe.");
-            throw new IllegalArgumentException("Zinsen muessen zwischen 0.0 und 1.0 liegen.");
+            throw new TransactionAttributeException("Zinsen muessen zwischen 0.0 und 1.0 liegen.");
         }
         this.incomingInterest = incomingInterest;
     }
@@ -145,12 +147,12 @@ public class Payment extends Transaction {
     /**
      * Setzt die Zinsen, die bei einer Auszahlung (Withdrawal) anfallen.
      * @param outgoingInterest Zinsen bei einer Auszahlung, in Prozent (0.0 - 1.0)
-     * @throws IllegalArgumentException wenn {@param outgoingInterest} nicht zwischen 0 und 1 liegt
+     * @throws TransactionAttributeException wenn {@param outgoingInterest} nicht zwischen 0 und 1 liegt
      */
-    public void setOutgoingInterest(double outgoingInterest) throws IllegalArgumentException {
+    public void setOutgoingInterest(double outgoingInterest) throws TransactionAttributeException {
         if (outgoingInterest < 0.0 || outgoingInterest > 1.0) {
             System.out.println("Fehlerhafte Eingabe: " + outgoingInterest + " ist keine gueltige (0.0 - 1.0) Zinssatzangabe.");
-            throw new IllegalArgumentException("Zinsen muessen zwischen 0.0 und 1.0 liegen.");
+            throw new TransactionAttributeException("Zinsen muessen zwischen 0.0 und 1.0 liegen.");
         }
         this.outgoingInterest = outgoingInterest;
     }

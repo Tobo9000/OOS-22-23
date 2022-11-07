@@ -1,5 +1,7 @@
 package bank;
 
+import bank.exceptions.TransactionAttributeException;
+
 /**
  * Repraesentiert Ueberweisungen im Banksystem.
  * Der Betrag kann nur positiv sein.
@@ -108,13 +110,13 @@ public class Transfer extends Transaction {
     /**
      * Setzt den Betrag der Ueberweisung und ueberprueft, ob er positiv ist.
      * @param amount Betrag der Ueberweisung, positiv
-     * @throws IllegalArgumentException wenn der Betrag negativ ist
+     * @throws TransactionAttributeException wenn der Betrag negativ ist
      */
     @Override
-    public void setAmount(double amount) throws IllegalArgumentException {
+    public void setAmount(double amount) throws TransactionAttributeException {
         if (amount <= 0) {
             System.out.println("Der Betrag einer Ueberweisung muss positiv sein, war aber " + amount + "!");
-            throw new IllegalArgumentException("Der Betrag einer Ueberweisung muss positiv sein.");
+            throw new TransactionAttributeException("Der Betrag einer Ueberweisung muss positiv sein.");
         }
         super.setAmount(amount);
     }
