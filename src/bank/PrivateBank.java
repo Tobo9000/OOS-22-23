@@ -6,6 +6,7 @@ import java.util.*;
 
 /**
  * Stellt eine private Bank dar, welche Konten verwaltet.
+ * Implementiert das Interface Bank.
  * @author Tobias Schnuerpel
  * @version 3.0
  */
@@ -106,16 +107,24 @@ public class PrivateBank implements Bank {
      *
      * @param account      the account to be added
      * @param transactions the transactions to be added to the account
-     * @throws AccountAlreadyExistsException if the account already exists
+     * @throws AccountAlreadyExistsException    if the account already exists
+     * @throws TransactionAlreadyExistException if the transaction already exists
+     * @throws TransactionAttributeException    if the validation check for certain attributes fail
      */
     @Override
-    public void createAccount(String account, List<Transaction> transactions) throws AccountAlreadyExistsException, TransactionAlreadyExistException, AccountDoesNotExistException, TransactionAttributeException {
+    public void createAccount(String account, List<Transaction> transactions) throws AccountAlreadyExistsException, TransactionAlreadyExistException, TransactionAttributeException {
         if (accountsToTransactions.containsKey(account)) {
             throw new AccountAlreadyExistsException("Account already exists: " + account);
         }
         accountsToTransactions.put(account, new ArrayList<>());
-        for (Transaction transaction : transactions)
-            addTransaction(account, transaction);
+        for (Transaction transaction : transactions) {
+            try {
+                addTransaction(account, transaction);
+            } catch (AccountDoesNotExistException e) {
+                // Kann nicht auftreten, da das Konto zuvor erstellt wurde
+                System.out.println("AccountDoesNotExistException: " + e.getMessage());
+            }
+        }
     }
 
     /**
@@ -126,11 +135,11 @@ public class PrivateBank implements Bank {
      * @param account     the account to which the transaction is added
      * @param transaction the transaction which is added to the account
      * @throws TransactionAlreadyExistException if the transaction already exists
+     * @throws AccountDoesNotExistException     if the specified account does not exist
+     * @throws TransactionAttributeException    if the validation check for certain attributes fail
      */
     @Override
     public void addTransaction(String account, Transaction transaction) throws TransactionAlreadyExistException, AccountDoesNotExistException, TransactionAttributeException {
-        // TODO: wo soll hier die TransactionAttributeException geworfen werden?
-
         if (!accountsToTransactions.containsKey(account)) {
             throw new AccountDoesNotExistException("Account does not exist: " + account);
         }
@@ -151,6 +160,7 @@ public class PrivateBank implements Bank {
      *
      * @param account     the account from which the transaction is removed
      * @param transaction the transaction which is removed from the account
+     * @throws AccountDoesNotExistException     if the specified account does not exist
      * @throws TransactionDoesNotExistException if the transaction cannot be found
      */
     @Override

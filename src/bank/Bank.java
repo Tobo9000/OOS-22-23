@@ -26,11 +26,10 @@ public interface Bank {
      * @param transactions a list of already existing transactions which should be added to the newly created account
      * @throws AccountAlreadyExistsException    if the account already exists
      * @throws TransactionAlreadyExistException if the transaction already exists
-     * @throws AccountDoesNotExistException     if the specified account does not exist
      * @throws TransactionAttributeException    if the validation check for certain attributes fail
      */
     void createAccount(String account, List<Transaction> transactions)
-            throws AccountAlreadyExistsException, TransactionAlreadyExistException, AccountDoesNotExistException, TransactionAttributeException;
+            throws AccountAlreadyExistsException, TransactionAlreadyExistException, TransactionAttributeException;
 
     /**
      * Adds a transaction to an already existing account.
