@@ -5,12 +5,12 @@ import bank.exceptions.*;
 import java.util.*;
 
 /**
- * Stellt eine private Bank dar, welche Konten verwaltet.
+ * Stellt eine alternative private Bank dar, welche Konten verwaltet.
  * Implementiert das Interface Bank.
  * @author Tobias Schnuerpel
  * @version 3.0
  */
-public class PrivateBank implements Bank {
+public class PrivateBankAlt implements Bank {
 
     /** Name der Bank */
     private String name;
@@ -33,7 +33,7 @@ public class PrivateBank implements Bank {
      * Die Zinsen sind standardmaessig auf 0 gesetzt.
      * @param name Name der Bank
      */
-    public PrivateBank(String name, double incomingInterest, double outgoingInterest) {
+    public PrivateBankAlt(String name, double incomingInterest, double outgoingInterest) {
         setName(name);
         setIncomingInterest(incomingInterest);
         setOutgoingInterest(outgoingInterest);
@@ -45,7 +45,7 @@ public class PrivateBank implements Bank {
      * Die Liste der Konten wird nicht kopiert.
      * @param bank Bank, die kopiert werden soll
      */
-    public PrivateBank(PrivateBank bank) {
+    public PrivateBankAlt(PrivateBankAlt bank) {
         this(
                 bank.getName(),
                 bank.getIncomingInterest(),
@@ -62,7 +62,7 @@ public class PrivateBank implements Bank {
      */
     @Override
     public String toString() {
-        return "PrivateBank{" +
+        return "PrivateBankAlt{" +
                 "name='" + name + '\'' +
                 ", incomingInterest=" + incomingInterest +
                 ", outgoingInterest=" + outgoingInterest +
@@ -80,7 +80,7 @@ public class PrivateBank implements Bank {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PrivateBank that = (PrivateBank) o;
+        PrivateBankAlt that = (PrivateBankAlt) o;
         if (incomingInterest != that.incomingInterest) return false;
         if (outgoingInterest != that.outgoingInterest) return false;
         if (!name.equals(that.name)) return false;
@@ -189,11 +189,10 @@ public class PrivateBank implements Bank {
         if (!accountsToTransactions.containsKey(account))
             return 0;
         double balance = 0;
-        /*
         for (Transaction transaction : accountsToTransactions.get(account)) {
-            if (transaction instanceof Payment payment) {
+            if (transaction instanceof Payment payment) { // direkter Typecast in Variable payment
                 balance += payment.calculate();
-            } else if (transaction instanceof Transfer transfer) {
+            } else if (transaction instanceof Transfer transfer) { // direkter Typecast in Variable transfer
                 if (transfer.getSender().equals(account)) {
                     balance -= transfer.calculate();
                 } else if (transfer.getRecipient().equals(account)) {
@@ -202,10 +201,6 @@ public class PrivateBank implements Bank {
                     System.out.println("Error - Transaction does not belong to account: " + transaction);
                 }
             }
-        }*/
-        for (Transaction transaction : accountsToTransactions.get(account)) {
-            System.out.println(transaction);
-            balance += transaction.calculate();
         }
         return balance;
     }
@@ -319,15 +314,5 @@ public class PrivateBank implements Bank {
             throw new TransactionAttributeException("Zinsen muessen zwischen 0.0 und 1.0 liegen.");
         }
         this.outgoingInterest = outgoingInterest;
-    }
-
-    /**
-     * Schreibt alle existierenden Konten auf die Konsole.
-     * Zum Testen der Funktionalität.
-     */
-    public void printAccounts() {
-        for (String account : accountsToTransactions.keySet()) {
-            System.out.print(account + ", ");
-        }
     }
 }

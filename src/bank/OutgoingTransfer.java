@@ -1,8 +1,19 @@
 package bank;
 
+/**
+ * Repraesentiert ausgehende Ueberweisungen im Banksystem.
+ * Erbt von der Klasse {@link Transfer}.
+ * @author Tobias Schnuerpel
+ * @version 3.0
+ */
 public class OutgoingTransfer extends Transfer {
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Konstruktoren
+    //------------------------------------------------------------------------------------------------------------------
+
     /**
-     * Konstruktor der Klasse Transfer. Erstellt eine neue Ueberweisung.
+     * Konstruktor der Klasse OutgoingTransfer. Erstellt eine neue ausgehende Ueberweisung.
      * Sender und Empfaenger sind standardmaessig auf null gesetzt.
      *
      * @param date        Datum der Ueberweisung, Format: "DD.MM.YYYY"
@@ -14,7 +25,7 @@ public class OutgoingTransfer extends Transfer {
     }
 
     /**
-     * Konstruktor der Klasse Transfer. Erstellt eine neue Ueberweisung.
+     * Konstruktor der Klasse OutgoingTransfer. Erstellt eine neue ausgehende Ueberweisung.
      *
      * @param date        Datum der Ueberweisung, Format: "DD.MM.YYYY"
      * @param amount      Betrag der Ueberweisung, positiv
@@ -27,7 +38,7 @@ public class OutgoingTransfer extends Transfer {
     }
 
     /**
-     * Copy-Konstruktor der Klasse Transfer. Erstellt eine neue Ueberweisung,
+     * Copy-Konstruktor der Klasse OutgoingTransfer. Erstellt eine neue Ueberweisung,
      * die alle Werte der uebergebenen Ueberweisung uebernimmt.
      *
      * @param transfer Ueberweisung, deren Werte uebernommen werden sollen
@@ -36,8 +47,13 @@ public class OutgoingTransfer extends Transfer {
         super(transfer);
     }
 
+    /**
+     * Berechnet den Betrag der ausgehenden Ueberweisung.
+     *
+     * @return Betrag der Ueberweisung
+     */
     @Override
     public double calculate() {
-        return super.calculate();
+        return (-1 * super.calculate());
     }
 }

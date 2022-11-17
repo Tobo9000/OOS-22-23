@@ -1,20 +1,149 @@
-import bank.Payment;
-import bank.Transfer;
+import bank.*;
+import bank.exceptions.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Die Main-Klasse dient als Einstiegspunkt in das Programm.
  * @author Tobias Schnuerpel
- * @version 2.0
+ * @version 3.0
  */
 public class Main {
+
     /**
-     * Startet das Programm. Testet die Klassen {@link bank.Payment} und {@link bank.Transfer}
-     * durch Konsolenausgaben.
+     * Startet das Programm. Testet das Bank-System durch Konsolenausgaben.
      * @param args Kommandozeilenargumente
      */
     public static void main(String[] args) {
         System.out.println("Banksystem gestartet!\n");
 
+        testP3();
+    }
+
+    /**
+     * Testmethode aus Praktikum 3.
+     */
+    public static void testP3() {
+        // Teste Methoden aus Interface Bank ------------------------------------
+        System.out.println("Teste Klasse PrivateBank:\nKonstruktoren:");
+
+        // Konstruktor
+        PrivateBank bank = new PrivateBank("Privatbank", 0.1, 0.2);
+        System.out.println(bank);
+
+        // Copy-Konstruktor (und equals)
+        PrivateBank bank2 = new PrivateBank(bank);
+        bank2.setName("Privatbank 2");
+        System.out.println("Copy-Konstruktor funktioniert: " + (!bank2.equals(bank) ? "JA" : "NEIN"));
+        bank2.setName("Privatbank");
+        System.out.println("Equals funktioniert: " + (bank2.equals(bank) ? "JA" : "NEIN"));
+
+        System.out.println("\nTeste Account erstellen:");
+        try {
+            bank.createAccount("Mustermann");
+            bank.createAccount("Musterfrau");
+            bank.createAccount("Mustermann");
+        } catch (AccountAlreadyExistsException e) {
+            System.out.println("ERFOLG: Account existiert bereits! (es können keine doppelten erstellt werden)");
+        }
+        System.out.println("erwartete Accounts = Mustermann, Musterfrau / tatsächliche Accounts = ");
+        bank.printAccounts();
+
+        System.out.println("\n\nTeste addTransaction:");
+        Payment p1 = new Payment("Mustermann", 30, "Auszahlung");
+        System.out.println("erwartet: Erfolg, Fehler / tatsächlich: ");
+        try {
+            bank.addTransaction("Mustermann", p1);
+            bank.addTransaction("Mustermann", p1); // soll fehlschlagen
+            bank.addTransaction("123", p1); // soll fehlschlagen
+        } catch (TransactionAttributeException | TransactionAlreadyExistException | AccountDoesNotExistException e) {
+            System.out.println("Fehler: " + e.getMessage());
+        }
+
+        System.out.println("\n\nTeste removeTransaction:");
+        System.out.println("erwartet: Erfolg, Fehler / tatsächlich: ");
+        try {
+            bank.removeTransaction("Mustermann", p1);
+            bank.removeTransaction("Mustermann", p1); // soll fehlschlagen
+            bank.removeTransaction("123", p1); // soll fehlschlagen
+        } catch (AccountDoesNotExistException | TransactionDoesNotExistException e) {
+            System.out.println("Fehler: " + e.getMessage());
+        }
+
+        System.out.println("\n\nTeste containsTransaction:");
+        try {
+            bank.addTransaction("Mustermann", p1);
+        } catch (TransactionAttributeException | TransactionAlreadyExistException | AccountDoesNotExistException e) {
+            System.out.println("unerwarteter Fehler: " + e.getMessage());
+        }
+        System.out.println("erwartet: true, false / tatsächlich: " + bank.containsTransaction("Mustermann", p1) + ", " + bank.containsTransaction("Musterfrau", p1));
+
+        System.out.println("\n\nTeste PrivateBank#getAccountBalance:");
+        try {
+            bank.createAccount("Anonym");
+        } catch (AccountAlreadyExistsException e) {
+            throw new RuntimeException(e);
+        }
+        Payment p3 = new Payment("17.11.2022", 30, "Einzahlung");
+        Payment p4 = new Payment("17.11.2022", -20, "Auszahlung");
+        IncomingTransfer t1 = new IncomingTransfer("17.11.2022", 50, "eingehende Überweisung", "Musterfrau", "Anonym");
+        OutgoingTransfer t2 = new OutgoingTransfer("17.11.2022", 42, "ausgehende Überweisung", "Anonym", "Musterfrau");
+        try {
+            bank.addTransaction("Anonym", p3);
+            bank.addTransaction("Anonym", p4);
+            bank.addTransaction("Anonym", t1);
+            bank.addTransaction("Anonym", t2);
+        } catch (TransactionAttributeException | TransactionAlreadyExistException | AccountDoesNotExistException e) {
+            System.out.println("unerwarteter Fehler: " + e.getMessage());
+        }
+        // erwartet = (30 * 0.9) - (20 * 1.2) + 50 - 42 = 11
+        System.out.println("erwartet: 11 / tatsächlich: " + bank.getAccountBalance("Anonym"));
+
+
+        System.out.println("\n\nTeste PrivateBankAlt#getAccountBalance:");
+        PrivateBankAlt bankAlt = new PrivateBankAlt("Privatbank alternativ", 0.1, 0.2);
+        try {
+            bankAlt.createAccount("Anonym");
+        } catch (AccountAlreadyExistsException e) {
+            throw new RuntimeException(e);
+        }
+        Transfer t3 = new Transfer("17.11.2022", 50, "eingehende Überweisung", "Musterfrau", "Anonym");
+        Transfer t4 = new Transfer("17.11.2022", 42, "ausgehende Überweisung", "Anonym", "Musterfrau");
+
+        try {
+            bankAlt.addTransaction("Anonym", p3);
+            bankAlt.addTransaction("Anonym", p4);
+            bankAlt.addTransaction("Anonym", t3);
+            bankAlt.addTransaction("Anonym", t4);
+        } catch (TransactionAttributeException | TransactionAlreadyExistException | AccountDoesNotExistException e) {
+            System.out.println("unerwarteter Fehler: " + e.getMessage());
+        }
+        // erwartet = (30 * 0.9) - (20 * 1.2) + 50 - 42 = 11
+        System.out.println("erwartet: 11 / tatsächlich: " + bankAlt.getAccountBalance("Anonym"));
+
+        System.out.println("\n\nTeste getTransactions:");
+        System.out.println("erwartet: 4 / tatsächlich: " + bank.getTransactions("Anonym").size());
+        System.out.println(bank.getTransactions("Anonym"));
+
+        System.out.println("\n\nTeste getTransactionsSorted (asc):");
+        System.out.println(bank.getTransactionsSorted("Anonym", true));
+
+        System.out.println("\n\nTeste getTransactionsSorted (desc):");
+        System.out.println(bank.getTransactionsSorted("Anonym", false));
+
+        System.out.println("\n\nTeste getTransactionsByType (positive):");
+        System.out.println(bank.getTransactionsByType("Anonym", true));
+
+        System.out.println("\n\nTeste getTransactionsByType (negative):");
+        System.out.println(bank.getTransactionsByType("Anonym", false));
+
+    }
+
+    /**
+     * Testmethode aus Praktikum 2.
+     */
+    public static void testP2() {
         // Teste Klasse Payment ------------------------------------------------
         System.out.println("Teste Klasse Payment:\nKonstruktoren:");
 

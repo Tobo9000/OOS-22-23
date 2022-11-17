@@ -7,7 +7,7 @@ import bank.exceptions.TransactionAttributeException;
  * Der Betrag kann entsprechend positiv (Einzahlung) oder negativ (Auszahlung) sein.
  * Erbt von der Klasse {@link Transaction}.
  * @author Tobias Schnuerpel
- * @version 2.0
+ * @version 3.0
  */
 public class Payment extends Transaction {
 

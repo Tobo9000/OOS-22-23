@@ -8,8 +8,12 @@ package bank;
  */
 public class IncomingTransfer extends Transfer {
 
+    //------------------------------------------------------------------------------------------------------------------
+    // Konstruktoren
+    //------------------------------------------------------------------------------------------------------------------
+
     /**
-     * Konstruktor der Klasse Transfer. Erstellt eine neue Ueberweisung.
+     * Konstruktor der Klasse IncomingTransfer. Erstellt eine neue eingehende Ueberweisung.
      * Sender und Empfaenger sind standardmaessig auf null gesetzt.
      *
      * @param date        Datum der Ueberweisung, Format: "DD.MM.YYYY"
@@ -21,7 +25,7 @@ public class IncomingTransfer extends Transfer {
     }
 
     /**
-     * Konstruktor der Klasse Transfer. Erstellt eine neue Ueberweisung.
+     * Konstruktor der Klasse IncomingTransfer. Erstellt eine neue eingehende Ueberweisung.
      *
      * @param date        Datum der Ueberweisung, Format: "DD.MM.YYYY"
      * @param amount      Betrag der Ueberweisung, positiv
@@ -34,7 +38,7 @@ public class IncomingTransfer extends Transfer {
     }
 
     /**
-     * Copy-Konstruktor der Klasse Transfer. Erstellt eine neue Ueberweisung,
+     * Copy-Konstruktor der Klasse IncomingTransfer. Erstellt eine neue Ueberweisung,
      * die alle Werte der uebergebenen Ueberweisung uebernimmt.
      *
      * @param transfer Ueberweisung, deren Werte uebernommen werden sollen
@@ -43,6 +47,11 @@ public class IncomingTransfer extends Transfer {
         super(transfer);
     }
 
+    /**
+     * Berechnet den Betrag der eingehenden Ueberweisung.
+     *
+     * @return Betrag der Ueberweisung
+     */
     @Override
     public double calculate() {
         return super.calculate();
