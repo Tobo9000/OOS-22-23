@@ -1,14 +1,23 @@
 package bank;
 
 import bank.exceptions.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
  * Stellt eine private Bank dar, welche Konten verwaltet.
  * Implementiert das Interface Bank.
  * @author Tobias Schnuerpel
- * @version 3.0
+ * @version 4.0
  */
 public class PrivateBank implements Bank {
 
@@ -24,6 +33,9 @@ public class PrivateBank implements Bank {
      */
     private final Map<String, List<Transaction>> accountsToTransactions = new HashMap<>();
 
+    /** Speicherort (Pfad) der Konten bzw. Transaktionen des PrivateBank-Objektes */
+    private String directoryName;
+
     //------------------------------------------------------------------------------------------------------------------
     // Konstruktoren
     //------------------------------------------------------------------------------------------------------------------
@@ -32,11 +44,17 @@ public class PrivateBank implements Bank {
      * Konstruktor der Klasse PrivateBank. Erstellt eine neue Bank.
      * Die Zinsen sind standardmaessig auf 0 gesetzt.
      * @param name Name der Bank
+     * @param incomingInterest Zinsen, die bei einer Einzahlung (Deposit) für diese Bank anfallen, in Prozent (0.0 - 1.0)
+     * @param outgoingInterest Zinsen, die bei einer Auszahlung (Withdrawal) für diese Bank anfallen, in Prozent (0.0 - 1.0)
+     * @param directoryName Speicherort für die Konten bzw. Transaktionen des PrivateBank-Objektes
      */
-    public PrivateBank(String name, double incomingInterest, double outgoingInterest) {
+    public PrivateBank(String name, double incomingInterest, double outgoingInterest, String directoryName)
+            throws IOException {
         setName(name);
         setIncomingInterest(incomingInterest);
         setOutgoingInterest(outgoingInterest);
+        this.directoryName = directoryName;
+        readAccounts();
     }
 
     /**
@@ -45,11 +63,13 @@ public class PrivateBank implements Bank {
      * Die Liste der Konten wird nicht kopiert.
      * @param bank Bank, die kopiert werden soll
      */
-    public PrivateBank(PrivateBank bank) {
+    public PrivateBank(PrivateBank bank)
+            throws IOException {
         this(
                 bank.getName(),
                 bank.getIncomingInterest(),
-                bank.getOutgoingInterest());
+                bank.getOutgoingInterest(),
+                bank.getDirectoryName());
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -67,6 +87,7 @@ public class PrivateBank implements Bank {
                 ", incomingInterest=" + incomingInterest +
                 ", outgoingInterest=" + outgoingInterest +
                 ", accountsToTransactions=" + accountsToTransactions +
+                ", directoryName='" + directoryName + '\'' +
                 '}';
     }
 
@@ -84,6 +105,7 @@ public class PrivateBank implements Bank {
         if (incomingInterest != that.incomingInterest) return false;
         if (outgoingInterest != that.outgoingInterest) return false;
         if (!name.equals(that.name)) return false;
+        if (!directoryName.equals(that.directoryName)) return false;
         return accountsToTransactions.equals(that.accountsToTransactions);
     }
 
@@ -92,12 +114,14 @@ public class PrivateBank implements Bank {
      *
      * @param account the account to be added
      * @throws AccountAlreadyExistsException if the account already exists
+     * @throws IOException if an I/O error occurs
      */
     @Override
-    public void createAccount(String account) throws AccountAlreadyExistsException {
+    public void createAccount(String account) throws AccountAlreadyExistsException, IOException {
         if (accountsToTransactions.containsKey(account))
             throw new AccountAlreadyExistsException("Account already exists: " + account);
         accountsToTransactions.put(account, new ArrayList<>());
+        writeAccount(account);
     }
 
     /**
@@ -109,11 +133,15 @@ public class PrivateBank implements Bank {
      * @throws AccountAlreadyExistsException    if the account already exists
      * @throws TransactionAlreadyExistException if the transaction already exists
      * @throws TransactionAttributeException    if the validation check for certain attributes fail
+     * @throws IOException                      if an I/O error occurs
      */
     @Override
     public void createAccount(String account, List<Transaction> transactions)
-            throws AccountAlreadyExistsException, TransactionAlreadyExistException, TransactionAttributeException {
-        createAccount(account);
+            throws AccountAlreadyExistsException, TransactionAlreadyExistException, TransactionAttributeException, IOException {
+        if (accountsToTransactions.containsKey(account))
+            throw new AccountAlreadyExistsException("Account already exists: " + account);
+        accountsToTransactions.put(account, new ArrayList<>());
+
         for (Transaction transaction : transactions) {
             try {
                 addTransaction(account, transaction);
@@ -122,6 +150,7 @@ public class PrivateBank implements Bank {
                 System.out.println("Account does not exists: " + e.getMessage());
             }
         }
+        writeAccount(account);
     }
 
     /**
@@ -132,10 +161,11 @@ public class PrivateBank implements Bank {
      * @throws TransactionAlreadyExistException if the transaction already exists
      * @throws AccountDoesNotExistException     if the specified account does not exist
      * @throws TransactionAttributeException    if the validation check for certain attributes fail
+     * @throws IOException                      if an I/O error occurs
      */
     @Override
     public void addTransaction(String account, Transaction transaction)
-            throws TransactionAlreadyExistException, AccountDoesNotExistException, TransactionAttributeException {
+            throws TransactionAlreadyExistException, AccountDoesNotExistException, TransactionAttributeException, IOException {
         if (!accountsToTransactions.containsKey(account))
             throw new AccountDoesNotExistException("Account does not exist: " + account);
         if (accountsToTransactions.get(account).contains(transaction))
@@ -146,6 +176,7 @@ public class PrivateBank implements Bank {
             payment.setOutgoingInterest(this.getOutgoingInterest());
         }
         accountsToTransactions.get(account).add(transaction);
+        writeAccount(account);
     }
 
     /**
@@ -156,15 +187,18 @@ public class PrivateBank implements Bank {
      * @param transaction the transaction which is removed from the specified account
      * @throws AccountDoesNotExistException     if the specified account does not exist
      * @throws TransactionDoesNotExistException if the transaction cannot be found
+     * @throws IOException                      if an I/O error occurs
+     *
      */
     @Override
     public void removeTransaction(String account, Transaction transaction)
-            throws AccountDoesNotExistException, TransactionDoesNotExistException {
+            throws AccountDoesNotExistException, TransactionDoesNotExistException, IOException {
         if (!accountsToTransactions.containsKey(account))
             throw new AccountDoesNotExistException("Account does not exist: " + account);
         if (!accountsToTransactions.get(account).contains(transaction))
             throw new TransactionDoesNotExistException("Transaction does not exist: " + transaction);
         accountsToTransactions.get(account).remove(transaction);
+        writeAccount(account);
     }
 
     /**
@@ -231,13 +265,11 @@ public class PrivateBank implements Bank {
      */
     @Override
     public List<Transaction> getTransactionsSorted(String account, boolean asc) {
-        List<Transaction> transactions = accountsToTransactions.get(account);
-        if (transactions != null) {
-            if (asc) {
-                transactions.sort(Comparator.comparingDouble(Transaction::calculate));
-            } else {
-                transactions.sort(Comparator.comparingDouble(Transaction::calculate).reversed());
-            }
+        List<Transaction> transactions = new ArrayList<>(accountsToTransactions.get(account));
+        if (asc) {
+            transactions.sort(Comparator.comparingDouble(Transaction::calculate));
+        } else {
+            transactions.sort(Comparator.comparingDouble(Transaction::calculate).reversed());
         }
         return transactions;
     }
@@ -257,6 +289,71 @@ public class PrivateBank implements Bank {
         else
             transactions.removeIf(transaction -> transaction.calculate() >= 0);
         return transactions;
+    }
+
+    //--------------------- Methoden für Serialisierung ---------------------
+
+    /**
+     * Erstellt GsonBuilder für die Serialisierung der PrivateBank-Konten.
+     * @return GsonBuilder für die Serialisierung der PrivateBank-Konten
+     */
+    private GsonBuilder getBuilder() {
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(Transaction.class, new TransactionAdapter());
+        builder.registerTypeAdapter(Payment.class, new TransactionAdapter());
+        builder.registerTypeAdapter(Transfer.class, new TransactionAdapter());
+        builder.registerTypeAdapter(IncomingTransfer.class, new TransactionAdapter());
+        builder.registerTypeAdapter(OutgoingTransfer.class, new TransactionAdapter());
+        return builder;
+    }
+
+    /**
+     * Deserialisiert alle Accounts aus dem Dateisystem und speichert sie in der Map.
+     * @throws IOException wenn Daten nicht eingelesen werden können
+     */
+    private void readAccounts() throws IOException {
+        // read all accounts from files, every account is stored in a separate file, read using gson
+        File[] files = new File(directoryName).listFiles();
+        if (files == null) // no accounts stored
+            return;
+
+        for (File file : files) {
+            if (!file.isFile())
+                return;
+
+            String account = file.getName().replace(".json", "");
+            // read all transactions from file with gson and custom TransactionAdapter
+            Gson gson = getBuilder().create();
+            List<Transaction> transactions;
+            try {
+                transactions = gson.fromJson(
+                        new FileReader(file),
+                        new TypeToken<List<Transaction>>() {}.getType()
+                );
+            } catch (JsonIOException | JsonSyntaxException e) {
+                System.out.println("Error - Could not read transactions from file: " + file);
+                throw new IOException("Could not read transactions from file: " + file);
+            }
+            // add transactions to account
+            accountsToTransactions.put(account, new ArrayList<>(transactions));
+        }
+    }
+
+    /**
+     * Serialisiert den angegebenen Account in das Dateisystem.
+     * @param account der Account, der serialisiert werden soll
+     * @throws IOException wenn Daten nicht geschrieben werden können
+     */
+    private void writeAccount(String account) throws IOException {
+        GsonBuilder builder = getBuilder();
+        builder.setPrettyPrinting();
+        Gson gson = builder.create();
+        String json = gson.toJson(accountsToTransactions.get(account));
+
+        String fileName = directoryName + "/" +  account + ".json";
+        Path path = Paths.get(fileName);
+        Files.createDirectories(path.getParent());
+        Files.writeString(path, json);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -319,6 +416,22 @@ public class PrivateBank implements Bank {
             throw new TransactionAttributeException("Zinsen muessen zwischen 0.0 und 1.0 liegen.");
         }
         this.outgoingInterest = outgoingInterest;
+    }
+
+    /**
+     * Gibt den Speicherort für Konten und Transaktionen des Bank-Objekts zurück.
+     * @return Speicherort (Pfad)
+     */
+    public String getDirectoryName() {
+        return directoryName;
+    }
+
+    /**
+     * Setzt den Speicherort für Konten und Transaktionen des Bank-Objekts.
+     * @param directoryName Speicherort (Pfad)
+     */
+    public void setDirectoryName(String directoryName) {
+        this.directoryName = directoryName;
     }
 
     /**

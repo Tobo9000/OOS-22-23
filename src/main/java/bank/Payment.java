@@ -89,8 +89,8 @@ public class Payment extends Transaction {
     public String toString() {
         return "Payment{" +
                 super.toString() +
-                ", incomingInterest=" + incomingInterest + '\'' +
-                ", outgoingInterest=" + outgoingInterest + '\'' +
+                ", incomingInterest=" + incomingInterest +
+                ", outgoingInterest=" + outgoingInterest +
                 '}';
     }
 

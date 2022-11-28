@@ -1,13 +1,12 @@
 import bank.*;
 import bank.exceptions.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
 /**
  * Die Main-Klasse dient als Einstiegspunkt in das Programm.
  * @author Tobias Schnuerpel
- * @version 3.0
+ * @version 4.0
  */
 public class Main {
 
@@ -17,23 +16,27 @@ public class Main {
      */
     public static void main(String[] args) {
         System.out.println("Banksystem gestartet!\n");
-
-        testP3();
+        try {
+            //testP3();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * Testmethode aus Praktikum 3.
      */
-    public static void testP3() {
+    public static void testP3() throws IOException {
         // Teste Methoden aus Interface Bank ------------------------------------
         System.out.println("Teste Klasse PrivateBank:\nKonstruktoren:");
 
         // Konstruktor
-        PrivateBank bank = new PrivateBank("Privatbank", 0.1, 0.2);
+        PrivateBank bank = new PrivateBank("Privatbank", 0.1, 0.2, "src/main/resources/privatebank1/");
         System.out.println(bank);
 
         // Copy-Konstruktor (und equals)
         PrivateBank bank2 = new PrivateBank(bank);
+        bank2.setDirectoryName("src/main/resources/privatebank2/");
         bank2.setName("Privatbank 2");
         System.out.println("Copy-Konstruktor funktioniert: " + (!bank2.equals(bank) ? "JA" : "NEIN"));
         bank2.setName("Privatbank");
