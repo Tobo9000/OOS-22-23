@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class PrivateBankTest {
 
-    private static final String DIRECTORY = "src/test/resources/privatebanktest/";
+    private static final String DIRECTORY = "src/test/resources/privatebanktest";
     private PrivateBank bank;
 
     @BeforeEach
@@ -40,6 +40,8 @@ public class PrivateBankTest {
             bank.createAccount("Account3");
             bank.addTransaction("Account3", new Payment("01.01.2020", 100, "Payment4"));
             bank.addTransaction("Account3", new OutgoingTransfer("01.01.2020", 100, "OutgoingTransfer2"));
+        } catch (AccountAlreadyExistsException e) {
+            System.out.println("Account already exists");
         } catch (Exception e) {
             fail("Konstruktor wirft Exception!", e);
         }
@@ -56,6 +58,7 @@ public class PrivateBankTest {
         } catch (Exception e) {
             fail("Konnte Dateien nicht löschen!", e);
         }
+        bank = null;
     }
 
     @Test
@@ -103,7 +106,8 @@ public class PrivateBankTest {
 
     @Test
     public void testAddTransaction() {
-        //...
+        assertDoesNotThrow(() -> bank.addTransaction("Account1", new Payment("01.01.2020", 100, "Payment5")));
+        assertThrows(Exception.class, () -> bank.addTransaction("Account1", new Payment("01.01.2020", 100, "Payment5")));
     }
 
     @Test

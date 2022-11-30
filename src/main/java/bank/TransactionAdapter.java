@@ -85,9 +85,11 @@ public class TransactionAdapter implements JsonSerializer<Transaction>, JsonDese
             outgoingInterest = inner.get("outgoingInterest").getAsDouble();
             return new Payment(date, amount, description, incomingInterest, outgoingInterest);
         } else {
-            String sender, recipient;
-            sender = inner.get("sender").getAsString();
-            recipient = inner.get("recipient").getAsString();
+            String sender = "", recipient = "";
+            if (inner.get("sender") != null)
+                sender = inner.get("sender").getAsString();
+            if (inner.get("recipient") != null)
+                recipient = inner.get("recipient").getAsString();
             return switch (type) {
                 case "Transfer" -> new Transfer(date, amount, description, sender, recipient);
                 case "IncomingTransfer" -> new IncomingTransfer(date, amount, description, sender, recipient);

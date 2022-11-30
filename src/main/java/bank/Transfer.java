@@ -12,9 +12,9 @@ import bank.exceptions.TransactionAttributeException;
 public class Transfer extends Transaction {
 
     /** Akteur, der die Ueberweisung initiiert hat. */
-    private String sender;
+    private String sender = "";
     /** Akteur, der die Ueberweisung empfaengt. */
-    private String recipient;
+    private String recipient = "";
 
     //------------------------------------------------------------------------------------------------------------------
     // Konstruktoren
