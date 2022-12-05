@@ -16,8 +16,13 @@ public class Main {
      */
     public static void main(String[] args) {
         System.out.println("Banksystem gestartet!\n");
-        try {
-        } catch (Exception e) {
+        PrivateBank p = new PrivateBank("Privatbank", 0.1, 0.1, "resources");
+         try {
+             p.createAccount("Konto1");
+             p.addTransaction("Konto1", new Payment("01.01.2020", 100, "Konto1 - Payment1", 1, 1));
+             p.addTransaction("Konto1", new IncomingTransfer("02.01.2020", 100, "Konto1 - IncomingTransfer1", "abc", "xyz"));
+             p.addTransaction("Konto1", new OutgoingTransfer("03.01.2020", 100, "Konto1 - OutgoingTransfer1"));
+         } catch (Exception e) {
             e.printStackTrace();
         }
     }
