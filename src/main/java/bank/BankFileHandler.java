@@ -72,6 +72,25 @@ public final class BankFileHandler {
     }
 
     /**
+     * Löscht die Datei [account].json unter dem angegebenen Pfad directory.
+     * Und damit auch alle darin befindlichen Transaktionen
+     * @param directory Pfad, unter dem die Datei gespeichert ist
+     * @param account Name der Datei (ohne Endung)
+     * @return true bei Erfolg, ansonsten false
+     */
+    public static boolean deleteAccount(String directory, String account) {
+        String fileName = directory + "/" + account + ".json";
+        Path path = Paths.get(fileName);
+        try {
+            Files.deleteIfExists(path);
+        } catch(IOException e) {
+            System.out.println("Error deleting file: " + e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Deserialisiert alle Account-Dateien im angegebenen Verzeichnis und speichert diese in einer Map,
      * welche zurückgegeben wird.
      * @param directory Pfad, in dem die Dateien gespeichert sind

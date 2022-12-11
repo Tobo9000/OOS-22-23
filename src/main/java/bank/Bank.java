@@ -32,6 +32,14 @@ public interface Bank {
             throws AccountAlreadyExistsException, TransactionAlreadyExistException, TransactionAttributeException;
 
     /**
+     * Deletes an account from the bank.
+     *
+     * @param account the account to be deleted
+     * @throws AccountDoesNotExistException if the account does not exist
+     */
+    void deleteAccount(String account) throws AccountDoesNotExistException;
+
+    /**
      * Adds a transaction to an already existing account.
      *
      * @param account     the account to which the transaction is added
@@ -62,6 +70,13 @@ public interface Bank {
      * @param transaction the transaction to search/look for
      */
     boolean containsTransaction(String account, Transaction transaction);
+
+    /**
+     * Returns the names of all accounts in the bank in a list.
+     *
+     * @return a list of all account names
+     */
+    List<String> getAllAccounts();
 
     /**
      * Calculates and returns the current account balance.

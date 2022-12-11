@@ -111,6 +111,16 @@ public class PrivateBankTest {
         assertTrue(Files.exists(Paths.get(DIRECTORY, accountName + ".json")));
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"newAccount1", "newAccount2", "newAccount3"})
+    public void testDeleteAccount(String accountName) {
+        assertDoesNotThrow(() -> bank.createAccount(accountName));
+        assertDoesNotThrow(() -> bank.deleteAccount(accountName));
+        assertThrows(AccountDoesNotExistException.class, () -> bank.deleteAccount(accountName));
+        // check if account exist on file system
+        assertFalse(Files.exists(Paths.get(DIRECTORY, accountName + ".json")));
+    }
+
     @Test
     public void testAddTransaction() {
         assertDoesNotThrow(() -> bank.addTransaction("Account1", new Payment("01.01.2020", 100, "AC1 - Payment5")));
@@ -142,6 +152,15 @@ public class PrivateBankTest {
         }
         assertFalse(bank.containsTransaction("Account1", new Payment("12.12.2012", 123, "ExistiertNicht")));
         assertFalse(bank.containsTransaction("Unbekannt", transactions.get(0)));
+    }
+
+    @Test
+    public void testGetAllAccounts() {
+        List<String> accounts = bank.getAllAccounts();
+        assertEquals(3, accounts.size());
+        assertTrue(accounts.contains("Account1"));
+        assertTrue(accounts.contains("Account2"));
+        assertTrue(accounts.contains("Account3"));
     }
 
     @Test

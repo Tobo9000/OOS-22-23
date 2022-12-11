@@ -140,6 +140,20 @@ public class PrivateBank implements Bank {
     }
 
     /**
+     * Deletes an account from the bank.
+     *
+     * @param account the account to be deleted
+     * @throws AccountDoesNotExistException if the account does not exist
+     */
+    @Override
+    public void deleteAccount(String account) throws AccountDoesNotExistException {
+        if (!accountsToTransactions.containsKey(account))
+            throw new AccountDoesNotExistException("Account does not exist: " + account);
+        accountsToTransactions.remove(account);
+        deleteAccountFile(account);
+    }
+
+    /**
      * Adds a transaction to an already existing account.
      *
      * @param account     the account to which the transaction is added
@@ -198,6 +212,16 @@ public class PrivateBank implements Bank {
     @Override
     public boolean containsTransaction(String account, Transaction transaction) {
         return accountsToTransactions.containsKey(account) && accountsToTransactions.get(account).contains(transaction);
+    }
+
+    /**
+     * Returns the names of all accounts in the bank in a list.
+     *
+     * @return a list of all account names
+     */
+    @Override
+    public List<String> getAllAccounts() {
+        return new ArrayList<>(accountsToTransactions.keySet());
     }
 
     /**
@@ -281,6 +305,17 @@ public class PrivateBank implements Bank {
         boolean result = BankFileHandler.writeAccount(directoryName, account, accountsToTransactions.get(account));
         if (!result) {
             System.out.println("Error - Could not write account: " + account);
+        }
+    }
+
+    /**
+     * Löscht die Datei des übergebenen Accounts mithilfe des BankFileHandlers.
+     * @param account der Account, dessen Datei gelöscht werden soll
+     */
+    private void deleteAccountFile(String account) {
+        boolean result = BankFileHandler.deleteAccount(directoryName, account);
+        if (!result) {
+            System.out.println("Error - Could not delete account: " + account);
         }
     }
 
