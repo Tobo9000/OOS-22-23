@@ -235,10 +235,10 @@ public class PrivateBank implements Bank {
         if (!accountsToTransactions.containsKey(account))
             return 0;
         double balance = 0;
-        for (Transaction transaction : accountsToTransactions.get(account)) {
+        //for (Transaction transaction : accountsToTransactions.get(account)) {
             //System.out.println(transaction);
-            balance += transaction.calculate();
-        }
+           // balance += transaction.calculate();
+        //}
         return balance;
     }
 

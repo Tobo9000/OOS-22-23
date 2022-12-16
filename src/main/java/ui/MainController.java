@@ -122,21 +122,7 @@ public class MainController implements Initializable {
     }
 
     private void showAccount() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("Accountview.fxml"));
-            root = loader.load();
-
-            AccountController accountController = loader.getController();
-            accountController.initData(bank,
-                    selectedAccount.get().replace("[", "").replace("]", ""));
-
-            scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-
-        } catch(IOException e) {
-            System.out.println(e.getMessage());
-        }
+        FxApplication.changeToAccountView(bank, selectedAccount.get());
     }
 
     private void addAccountEvent(MouseEvent evet) {
