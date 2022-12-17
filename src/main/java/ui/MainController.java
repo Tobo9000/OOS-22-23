@@ -7,42 +7,52 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Controller für die Mainview.fxml.
+ * Stellt eine Übersicht über alle Konten der Bank dar.
+ * @author Tobias Schnuerpel
+ * @version 5.0
+ */
 public class MainController implements Initializable {
 
+    /**
+     * Verzeichnis, in dem die Kontodaten gespeichert werden sollen.
+     */
     private static final String DIRECTORY = "src/main/resources/data/sparkasse";
-
-    private Stage stage;
-    private Scene scene;
+    /**
+     * Liste mit allen Konten der Bank. Wird im UI angezeigt.
+     */
     private final ObservableList<String> accountList = FXCollections.observableArrayList();
+    /**
+     * Das Bankobjekt.
+     */
     private final PrivateBank bank = new PrivateBank("Spardose & Co.", 0.03, 0.01, DIRECTORY);
+    /**
+     * Referenz auf den derzeit in der Liste ausgewählten Account.
+     */
     AtomicReference<String> selectedAccount = new AtomicReference<>();
 
+    /** Text unterhalb der Accountliste. Zeigt Statusmeldungen an. */
     @FXML
     private Text text;
+    /** Button um Accounts hinzuzufügen */
     @FXML
     private Button addButton;
+    /** ListView, zeigt die AccountListe auf der UI an */
     @FXML
     private ListView<String> accountsListView;
-    @FXML
-    private Parent root;
 
     /**
      * Called to initialize a controller after its root element has been
@@ -55,14 +65,16 @@ public class MainController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        //stage = (Stage) root.getScene().getWindow();
-        scene = root.getScene();
-
         updateAccountList();
         initializeAccountListView();
         addButton.setOnMouseClicked(this::addAccountEvent);
     }
 
+    /**
+     * Initialisiert die AccountListView.
+     * Setzt die AccountListe als Items und fügt
+     * Listener für das ContextMenu hinzu.
+     */
     private void initializeAccountListView() {
         accountsListView.setItems(accountList);
 
@@ -77,13 +89,23 @@ public class MainController implements Initializable {
         viewAccount.setOnAction(this::onClickedViewAccount);
     }
 
+    /**
+     * Aktualisiert die AccountListe mit den aktuellen Konten der Bank.
+     */
     private void updateAccountList() {
         accountList.clear();
         accountList.addAll(bank.getAllAccounts());
         accountList.sort(Comparator.naturalOrder());
     }
 
+    /**
+     * Eventhandler für das (Doppel-) klicken auf einen Account in der AccountListView.
+     * Öffnet die Detailansicht für den Account.
+     * @param event Das Event
+     */
     private void onClickedAccountsListView(MouseEvent event) {
+        if (accountsListView.getSelectionModel().getSelectedItem() == null)
+            return;
         selectedAccount.set(String.valueOf(
                 accountsListView.getSelectionModel().getSelectedItem()));
         String account = selectedAccount.get()
@@ -97,7 +119,14 @@ public class MainController implements Initializable {
             showAccount();
     }
 
+    /**
+     * Eventhandler für das klicken auf den "Delete Account" Eintrag im ContextMenu.
+     * Löscht den Account aus der Bank.
+     * @param event Das Event
+     */
     private void onClickedDeleteAccount(ActionEvent event) {
+        if (selectedAccount.get() == null)
+            return;
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Delete Account");
         alert.setContentText("Are you sure you want to delete this account?");
@@ -117,15 +146,29 @@ public class MainController implements Initializable {
         });
     }
 
+    /**
+     * Eventhandler für das klicken auf den "View Account" Eintrag im ContextMenu.
+     * Öffnet die Detailansicht für den Account.
+     * @param event Das Event
+     */
     private void onClickedViewAccount(ActionEvent event) {
         showAccount();
     }
 
+    /**
+     * Öffnet die Detailansicht für den derzeit in der Liste ausgewählten Account.
+     */
     private void showAccount() {
-        FxApplication.changeToAccountView(bank, selectedAccount.get());
+        if (selectedAccount.get() != null)
+            FxApplication.changeToAccountView(bank, selectedAccount.get());
     }
 
-    private void addAccountEvent(MouseEvent evet) {
+    /**
+     * Eventhandler für das klicken auf den "Add Account" Button.
+     * Öffnet ein Dialogfenster, in dem der Accountname eingegeben werden kann.
+     * @param event Das Event
+     */
+    private void addAccountEvent(MouseEvent event) {
         text.setText("");
         Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("Add Account");
@@ -153,6 +196,10 @@ public class MainController implements Initializable {
         dialog.show();
     }
 
+    /**
+     * Fügt einen neuen Account mit dem übergebenen Namen zur Bank hinzu.
+     * @param name Der Name des neuen Accounts
+     */
     private void addAccount(String name) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
 

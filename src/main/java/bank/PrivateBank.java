@@ -235,10 +235,10 @@ public class PrivateBank implements Bank {
         if (!accountsToTransactions.containsKey(account))
             return 0;
         double balance = 0;
-        //for (Transaction transaction : accountsToTransactions.get(account)) {
-            //System.out.println(transaction);
-           // balance += transaction.calculate();
-        //}
+        for (Transaction transaction : accountsToTransactions.get(account)) {
+            System.out.println(transaction);
+            balance += transaction.calculate();
+        }
         return balance;
     }
 
@@ -267,6 +267,8 @@ public class PrivateBank implements Bank {
     public List<Transaction> getTransactionsSorted(String account, boolean asc) {
         if (!accountsToTransactions.containsKey(account))
             return new ArrayList<>();
+        if (accountsToTransactions.get(account) == null)
+            return new ArrayList<>();
         List<Transaction> transactions = new ArrayList<>(accountsToTransactions.get(account));
         if (asc) {
             transactions.sort(Comparator.comparingDouble(Transaction::calculate));
@@ -286,6 +288,8 @@ public class PrivateBank implements Bank {
     @Override
     public List<Transaction> getTransactionsByType(String account, boolean positive) {
         if (!accountsToTransactions.containsKey(account))
+            return new ArrayList<>();
+        if (accountsToTransactions.get(account) == null)
             return new ArrayList<>();
         List<Transaction> transactions = new ArrayList<>(accountsToTransactions.get(account));
         if (positive)
@@ -324,8 +328,13 @@ public class PrivateBank implements Bank {
      */
     private void readAccounts() {
         Map<String, List<Transaction>> result = BankFileHandler.readAccounts(directoryName);
-        if (!result.isEmpty())
+        if (!result.isEmpty()) {
+            // add arraylist if the value for key is null
+            for (String key : result.keySet()) {
+                result.computeIfAbsent(key, k -> new ArrayList<>());
+            }
             accountsToTransactions = result;
+        }
     }
 
     //------------------------------------------------------------------------------------------------------------------

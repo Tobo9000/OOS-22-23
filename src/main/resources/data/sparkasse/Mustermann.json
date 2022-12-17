@@ -1,0 +1,32 @@
+[
+  {
+    "CLASSNAME": "Payment",
+    "INSTANCE": {
+      "incomingInterest": 0.03,
+      "outgoingInterest": 0.01,
+      "date": "01.01.2005",
+      "amount": 10542.42,
+      "description": "Geheim"
+    }
+  },
+  {
+    "CLASSNAME": "OutgoingTransfer",
+    "INSTANCE": {
+      "sender": "Mustermann",
+      "recipient": "wer anders",
+      "date": "17.12.2022",
+      "amount": 5000.0,
+      "description": "viel Geld von mir"
+    }
+  },
+  {
+    "CLASSNAME": "IncomingTransfer",
+    "INSTANCE": {
+      "sender": "wer anders",
+      "recipient": "Mustermann",
+      "date": "18.12.2022",
+      "amount": 5000.0,
+      "description": "viel Geld wieder zurück an mich"
+    }
+  }
+]
